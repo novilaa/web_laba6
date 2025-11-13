@@ -10,14 +10,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Создаем папку Helpers
-RUN mkdir -p Helpers
+# Создаем папки
+RUN mkdir -p Helpers Models
 
 # Копируем ВСЕ файлы из www
 COPY ./www/ ./
 
-# Устанавливаем зависимости (если composer.json существует)
-RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
+# Устанавливаем зависимости
+RUN composer install --no-dev --optimize-autoloader
 
 # Устанавливаем правильные права
 RUN chown -R www-data:www-data /var/www/html
