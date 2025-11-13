@@ -1,4 +1,0 @@
-fsfs;2;tech;Да;card
-цуцуцц;24;tech;Да;card
-2025-10-23 21:45:10 | NIlya | 100 | romance | no | 2weeks
-2025-10-23 21:48:08 | ilushka22novikov | 11 | science_fiction | yes | 1week

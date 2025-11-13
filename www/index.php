@@ -1,147 +1,130 @@
 <?php
-session_start();
-require_once 'db.php';
-require_once 'Subscription.php';
-
-// Создаем экземпляр класса Subscription
-$subscription = new Subscription($pdo);
-
-// Получаем все подписки
-try {
-    $subscriptions = $subscription->getAll();
-} catch (\PDOException $e) {
-    $error = "Ошибка при получении данных: " . $e->getMessage();
-}
-?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Система подписки на журналы</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        .nav { 
-            margin: 20px 0; 
-            padding: 10px; 
-            background: #f5f5f5; 
-            border-radius: 4px;
-        }
-        .nav a { 
-            margin-right: 15px; 
-            text-decoration: none; 
-            color: #0066cc;
-            padding: 5px 10px;
-        }
-        .nav a:hover {
-            background: #e0e0e0;
-            border-radius: 3px;
-        }
-        .subscription {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-            background: #fff;
-        }
-        .success {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border: 1px solid #c3e6cb;
-        }
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border: 1px solid #f5c6cb;
-        }
-        .add-button {
-            background: #28a745;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-            margin: 20px 0;
-        }
-        .add-button:hover {
-            background: #218838;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f8f9fa;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-    </style>
-</head>
-<body>
-    <h1>📚 Система подписки на журналы</h1>
+// Правильная автозагрузка классов
+spl_autoload_register(function ($class) {
+    // Project-specific namespace prefix
+    $prefix = 'App\\';
     
-    <div class="nav">
-        <a href="index.php">🏠 Главная</a>
-        <a href="form.html">📝 Оформить подписку</a>
-    </div>
+    // Base directory for the namespace prefix
+    $base_dir = __DIR__ . '/';
+    
+    // Does the class use the namespace prefix?
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+    
+    // Get the relative class name
+    $relative_class = substr($class, $len);
+    
+    // Replace namespace separators with directory separators
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    
+    // Если файл существует, загружаем его
+    if (file_exists($file)) {
+        require $file;
+    }
+});
 
-    <?php if (isset($_SESSION['success'])): ?>
-        <div class="success">
-            <?= htmlspecialchars($_SESSION['success']) ?>
-            <?php unset($_SESSION['success']); ?>
-        </div>
-    <?php endif; ?>
+echo "<!DOCTYPE html>";
+echo "<html><head><title>Lab 6 - NoSQL DB</title>";
+echo "<style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 4px; }
+    .success { color: #28a745; }
+    .error { color: #dc3545; }
+    .info { background: #d1ecf1; padding: 10px; border-radius: 4px; border-left: 4px solid #17a2b8; }
+</style>";
+echo "</head><body>";
 
-    <?php if (isset($error)): ?>
-        <div class="error"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
+echo "<div class='container'>";
+echo "<h1>🚀 Лабораторная работа 6</h1>";
 
-    <a href="form.html" class="add-button">➕ Оформить новую подписку</a>
+// Проверка системы
+echo "<div class='info'>";
+echo "<h3>🔍 Проверка системы и автозагрузки</h3>";
+echo "<p><strong>PHP Version:</strong> " . PHP_VERSION . "</p>";
+echo "<p><strong>Server Time:</strong> " . date('Y-m-d H:i:s') . "</p>";
 
-    <?php if (!empty($subscriptions)): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Имя</th>
-                    <th>Журнал</th>
-                    <th>Срок подписки</th>
-                    <th>Электронная версия</th>
-                    <th>Способ оплаты</th>
-                    <th>Дата оформления</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($subscriptions as $sub): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($sub['name']) ?></td>
-                        <td><?= htmlspecialchars($sub['magazine']) ?></td>
-                        <td><?= htmlspecialchars($sub['subscription_period']) ?> мес.</td>
-                        <td><?= $sub['electronic_version'] ? 'Да' : 'Нет' ?></td>
-                        <td><?= htmlspecialchars($sub['payment_method']) ?></td>
-                        <td><?= htmlspecialchars($sub['created_at']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p>Пока нет оформленных подписок.</p>
-    <?php endif; ?>
-</body>
-</html>
+// Проверка классов и файлов
+$classes = [
+    'App\Helpers\ClientFactory' => 'Helpers/ClientFactory.php',
+    'App\RedisExample' => 'RedisExample.php',
+    'App\ElasticExample' => 'ElasticExample.php',
+    'App\ClickhouseExample' => 'ClickhouseExample.php'
+];
+
+foreach ($classes as $class => $file) {
+    $fullPath = __DIR__ . '/' . $file;
+    $fileExists = file_exists($fullPath);
+    
+    echo "<p><strong>Класс:</strong> $class</p>";
+    echo "<p><strong>Файл:</strong> $file</p>";
+    echo "<p><strong>Полный путь:</strong> $fullPath</p>";
+    echo "<p><strong>Файл существует:</strong> " . ($fileExists ? '✅ Да' : '❌ Нет') . "</p>";
+    
+    if ($fileExists) {
+        // Пробуем загрузить файл вручную
+        require_once $fullPath;
+        
+        if (class_exists($class)) {
+            echo "<p class='success'>✅ Класс загружен успешно!</p>";
+        } else {
+            echo "<p class='error'>❌ Класс не загружен после require</p>";
+            
+            // Покажем содержимое файла для отладки
+            $content = file_get_contents($fullPath);
+            if (strpos($content, 'namespace') === false) {
+                echo "<p class='error'>⚠️ В файле нет namespace!</p>";
+            }
+        }
+    }
+    echo "<hr>";
+}
+echo "</div>";
+
+// Redis тест
+echo "<div class='section'>";
+echo "<h2>🔴 Redis Example</h2>";
+try {
+    // Загружаем ClientFactory вручную на всякий случай
+    if (!class_exists('App\Helpers\ClientFactory') && file_exists(__DIR__ . '/Helpers/ClientFactory.php')) {
+        require_once __DIR__ . '/Helpers/ClientFactory.php';
+    }
+    
+    $redis = new App\RedisExample();
+    echo "<p class='success'>✅ RedisExample инициализирован</p>";
+    echo "<p><strong>SET:</strong> " . $redis->setValue('user:101', 'Alice') . "</p>";
+    echo "<p><strong>GET:</strong> " . $redis->getValue('user:101') . "</p>";
+} catch (Exception $e) {
+    echo "<p class='error'>❌ Ошибка Redis: " . $e->getMessage() . "</p>";
+    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+}
+echo "</div>";
+
+// Elasticsearch тест
+echo "<div class='section'>";
+echo "<h2>🔍 Elasticsearch Example</h2>";
+try {
+    $elastic = new App\ElasticExample();
+    echo "<p class='success'>✅ ElasticExample инициализирован</p>";
+    echo "<p><strong>Create Index:</strong> " . $elastic->createIndex('books') . "</p>";
+} catch (Exception $e) {
+    echo "<p class='error'>❌ Ошибка Elasticsearch: " . $e->getMessage() . "</p>";
+}
+echo "</div>";
+
+// ClickHouse тест
+echo "<div class='section'>";
+echo "<h2>⚡️ ClickHouse Example</h2>";
+try {
+    $clickhouse = new App\ClickhouseExample();
+    echo "<p class='success'>✅ ClickhouseExample инициализирован</p>";
+    echo "<p><strong>Query:</strong> " . $clickhouse->query('SELECT count() FROM system.tables') . "</p>";
+} catch (Exception $e) {
+    echo "<p class='error'>❌ Ошибка ClickHouse: " . $e->getMessage() . "</p>";
+}
+echo "</div>";
+
+echo "</div>";
+echo "</body></html>";

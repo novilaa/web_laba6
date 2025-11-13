@@ -1,15 +1,24 @@
 <?php return array(
     'root' => array(
-        'name' => 'myproject/library',
+        'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'ddf4a4ae8edada607a947115e1c0a3525cdff983',
-        'type' => 'project',
+        'reference' => 'f69795c53aad8f872529838450284243f5addede',
+        'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'f69795c53aad8f872529838450284243f5addede',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'guzzlehttp/guzzle' => array(
             'pretty_version' => '7.10.0',
             'version' => '7.10.0.0',
@@ -34,15 +43,6 @@
             'reference' => '21dc724a0583619cd1652f673303492272778051',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/psr7',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'myproject/library' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'ddf4a4ae8edada607a947115e1c0a3525cdff983',
-            'type' => 'project',
-            'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
